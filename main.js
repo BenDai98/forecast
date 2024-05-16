@@ -99,8 +99,8 @@ map.fire("click", {
 });
 
 async function loadWindData(url) {
-    let response = await fetch(url);
-    let jsondata = await response.json();
+    const response = await fetch(url);
+    const jsondata = await response.json();
 
     console.log(jsondata);
 
@@ -110,16 +110,22 @@ async function loadWindData(url) {
         displayOptions: {
             directionString: "Windrichtung",
             speedString: "Windgeschwindigkeit",
-            speedUnit: "k/h",
+            speedUnit: "m/s",
             position: "bottomright",
-            velocityType: ""
+            velocityType: "",
         }
     }).addTo(themaLayer.wind);
-    
-    //VorhersageZeitpunkt ermitteln
+
+
     let forecastDate = new Date(jsondata[0].header.refTime);
-    forecastDate.setHours(forecastDate.getHours()+ jsondata[0].header.forecastTime)
-    console.log(forecastDate);
+    forecastDate.setHours(forecastDate.getHours() + jsondata[0].header.forecastTime);
+    console.log(forecastDate.toLocaleString());
+
+    document.querySelector("#forecast-date").innerHTML = `(<a href="${url}" target="met.no"> Stand: ${forecastDate.toLocaleString()}</a>)`;
+
+    //document.querySelector("#map").innerHTML = "heute keine Karte";
+
+    //document.querySelector("#body").innerHTML = "das wars für heute";
 
 }
 loadWindData("https://geographie.uibk.ac.at/data/ecmwf/data/wind-10u-10v-europe.json");
