@@ -94,13 +94,27 @@ map.on("click", function (evt) {
 });
 
 // Click auf innsbruck simulieren
-map.fire("click",{
+map.fire("click", {
     latlng: ibk
 });
 
-async function loadWind(url){
-    const response = await fatch(url);
-    const jsondata = await response.json();
+async function loadWindData(url) {
+    let response = await fetch(url);
+    let jsondata = await response.json();
+
     console.log(jsondata);
-};
-loadWind("https://geographie.uibk.ac.at/data/ecmwf/data/wind-10u-10v-europe.json")
+
+    L.velocityLayer({
+        data: jsondata,
+        lineWidth: 2,
+        displayOptions: {
+            directionString: "Windrichtung",
+            speedString: "Windgeschwindigkeit",
+            speedUnit: "k/h",
+            position: "bottomright",
+            velocityType: ""
+        }
+    }).addTo(themaLayer.wind);
+
+}
+loadWindData("https://geographie.uibk.ac.at/data/ecmwf/data/wind-10u-10v-europe.json");
