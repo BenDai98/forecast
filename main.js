@@ -41,10 +41,9 @@ async function showForecast(url) {
         pointToLayer: function (feature, latlng) {
             let details = feature.properties.timeseries[0].data.instant.details;
             let time = new Date(feature.properties.timeseries[0].time);
-            console.log(time);
-
+            //console.log(time);
             let content = `
-                <h4>Wettervorhersage für: ${time.toLocaleString}</h4>
+                <h4>Wettervorhersage für: ${time.toLocaleString()}</h4>
                 <ul>
                     <li>Luftdruck (hPa): ${details.air_pressure_at_sea_level}</li>
                     <li>Temperatur (°C): ${details.air_temperature}</li>
@@ -57,16 +56,42 @@ async function showForecast(url) {
 
             for (let i = 0; i <= 24; i += 3) {
                 let symbol = feature.properties.timeseries[i].data.next_1_hours.summary.symbol_code;
+                let time = new Date(feature.properties.timeseries[i].time);
                 content += `
-                    <img src="icons/${symbol}.svg" alt="${symbol}" style="width:32px">
+                    <img 
+                        src="icons/${symbol}.svg" 
+                        alt="${symbol}" 
+                        style="width:30px" 
+                        title="${time.toLocaleString()}">
                 `;
-                console.log(i, symbol);
-
+                //console.log(i, symbol);
             };
+
+            // Link zum Datendownload
+            content += `
+                <p><a href="${url}" target="met.no">Daten Downloaden</a></p>
+            `;
+
             L.popup(latlng, {
                 content: content,
             }).openOn(themaLayer.forecast);
         }
     }).addTo(themaLayer.forecast);
 }
-showForecast("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=47.267222&lon=11.392778");
+//showForecast("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=47.267222&lon=11.392778");
+
+map.on("click", function (evt) {
+    console.log(evt);
+    let lat = evt.latlng.lat;
+    let lng = evt.latlng.lng;
+    console.log(lat, lng);
+
+    showForecast(`
+    https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lng}
+    `);
+});
+
+// Click auf innsbruck simulieren
+map.fire("click",{
+    latlng: ibk
+})
