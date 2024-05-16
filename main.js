@@ -37,10 +37,23 @@ async function showForecast(url) {
 
     // aktuelles Wetter und Wettervorhersage implementieren
     console.log(jsondata);
-    L.geoJSON(jsondata,{
-        pointToLayer: function(feature, latlng){
+    L.geoJSON(jsondata, {
+        pointToLayer: function (feature, latlng) {
+            let details = feature.properties.timeseries[0].data.instant.details;
+            console.log(details);
+            let content = `
+                <ul>
+                    <li>Luftdruck (hPa): ${details.air_pressure_at_sea_level}</li>
+                    <li>Temperatur (°C): ${details.air_temperature}</li>
+                    <li>Bewölkungsgrad (%): ${details.cloud_area_fraction}</li>
+                    <li>Niederschlag (mm): ${details.percipitation_amount}</li>
+                    <li>Relative Luftfeuchtigkeit (%): ${details.relative_humidity}</li>
+                    <li>Windrichtiung (°): ${details.wind_from_direction}</li>
+                    <li>Windgeschwindigkeit (km/h): ${details.wind_speed*3.6}</li>
+                </ul>
+                `;
             L.popup(latlng, {
-                content: '<p>Hello world!<br />This is a nice popup.</p>'
+                content: content,
             }).openOn(themaLayer.forecast);
         }
     }).addTo(themaLayer.forecast);
